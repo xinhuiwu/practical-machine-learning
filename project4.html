@@ -131,7 +131,7 @@ $(document).ready(function () {
 <div id="build-model" class="section level2">
 <h2>Build Model</h2>
 <p>The “classe” variable in the training set is the outcome. We are trying to use any of the other variables to predict the “classe”.</p>
-<p>First, we will clean up to remove some variables with no variables and with no value. so we use the functions “”nearZeroVar“” and “”is.na“” to get rid of those columns. Also we are removing all the user name and stamp time to further reduce the data size.</p>
+<p>First, we will clean up to remove some variables with no variables and with no value. so we use the functions <strong>nearZeroVar</strong> and <strong>is.na</strong> to get rid of those columns. Also we are removing all the user name and stamp time to further reduce the data size.</p>
 <pre class="r"><code>library(caret)</code></pre>
 <pre><code>## Loading required package: lattice</code></pre>
 <pre><code>## Loading required package: ggplot2</code></pre>
@@ -140,13 +140,14 @@ testing&lt;-read.csv(&quot;pml-testing.csv&quot;)
 trainingcl &lt;- training[, -nearZeroVar(training)] 
 trainingcl &lt;- trainingcl[,colSums(is.na(trainingcl)) == 0] 
 trainingclfinal&lt;-trainingcl[,7:59]</code></pre>
-<p>Then we creates data partitions with the function “”createDataPartition“”. We will get a matrix of indices corresponding to 70% of the data as the training set and get a matrix of indices corresponding to 30% of the data as the testing set. And we set “”x“” and “”y“” as predictors and outcome to improve the traning model process later on.</p>
-<pre class="r"><code>inTraining &lt;- createDataPartition(y=trainingclfinal$classe, p = .70, list=FALSE)
+<p>Then we creates data partitions with the function <strong>createDataPartition</strong>. We will get a matrix of indices corresponding to 70% of the data as the training set and get a matrix of indices corresponding to 30% of the data as the testing set. And we set <strong>x</strong> and <strong>y</strong> as predictors and outcome to improve the traning model process later on.</p>
+<pre class="r"><code>set.seed(12345)
+inTraining &lt;- createDataPartition(y=trainingclfinal$classe, p = .70, list=FALSE)
 trainingdata &lt;- trainingclfinal[inTraining,] 
 testingdata &lt;- trainingclfinal[-inTraining,]
 y&lt;-trainingdata[,53]
 x&lt;-trainingdata[,-53]</code></pre>
-<p>We use “”randomn forest“” method to training the model. This is one of the most used/accurate algorithms along with boosting. It is a extension of bagging on classification/regression trees. The command “”trainControl“” are used to define how the model will be applied to the training data. We set the method as “”cross validation“” and the number of subsamples as “”3“”.</p>
+<p>We use <strong>randomn forest</strong> method to training the model. This is one of the most used/accurate algorithms along with boosting. It is a extension of bagging on classification/regression trees. The command <strong>trainControl</strong> are used to define how the model will be applied to the training data. We set the method as <strong>cross validation</strong> and the number of subsamples as <strong>3</strong>.</p>
 <pre class="r"><code>modelrf&lt;-train(x,y,data=trainingdata,method=&quot;rf&quot;,trControl = trainControl(method=&quot;cv&quot;,number=3))</code></pre>
 <pre><code>## Loading required package: randomForest</code></pre>
 <pre><code>## randomForest 4.6-12</code></pre>
@@ -166,34 +167,34 @@ confusionMatrix(predictions, testingdata$classe)</code></pre>
 ## 
 ##           Reference
 ## Prediction    A    B    C    D    E
-##          A 1674    4    0    0    0
-##          B    0 1130    5    0    0
-##          C    0    5 1018   13    0
-##          D    0    0    3  951    5
-##          E    0    0    0    0 1077
+##          A 1673   13    0    0    0
+##          B    1 1120   18    0    0
+##          C    0    6 1006   24    0
+##          D    0    0    2  940    4
+##          E    0    0    0    0 1078
 ## 
 ## Overall Statistics
-##                                           
-##                Accuracy : 0.9941          
-##                  95% CI : (0.9917, 0.9959)
-##     No Information Rate : 0.2845          
-##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16       
-##                                           
-##                   Kappa : 0.9925          
-##  Mcnemar's Test P-Value : NA              
+##                                          
+##                Accuracy : 0.9884         
+##                  95% CI : (0.9854, 0.991)
+##     No Information Rate : 0.2845         
+##     P-Value [Acc &gt; NIR] : &lt; 2.2e-16      
+##                                          
+##                   Kappa : 0.9854         
+##  Mcnemar's Test P-Value : NA             
 ## 
 ## Statistics by Class:
 ## 
 ##                      Class: A Class: B Class: C Class: D Class: E
-## Sensitivity            1.0000   0.9921   0.9922   0.9865   0.9954
-## Specificity            0.9991   0.9989   0.9963   0.9984   1.0000
-## Pos Pred Value         0.9976   0.9956   0.9826   0.9917   1.0000
-## Neg Pred Value         1.0000   0.9981   0.9984   0.9974   0.9990
+## Sensitivity            0.9994   0.9833   0.9805   0.9751   0.9963
+## Specificity            0.9969   0.9960   0.9938   0.9988   1.0000
+## Pos Pred Value         0.9923   0.9833   0.9710   0.9937   1.0000
+## Neg Pred Value         0.9998   0.9960   0.9959   0.9951   0.9992
 ## Prevalence             0.2845   0.1935   0.1743   0.1638   0.1839
-## Detection Rate         0.2845   0.1920   0.1730   0.1616   0.1830
-## Detection Prevalence   0.2851   0.1929   0.1760   0.1630   0.1830
-## Balanced Accuracy      0.9995   0.9955   0.9942   0.9924   0.9977</code></pre>
-<p>With this developed model, the accuracy with the test data will reach 0.9935.</p>
+## Detection Rate         0.2843   0.1903   0.1709   0.1597   0.1832
+## Detection Prevalence   0.2865   0.1935   0.1760   0.1607   0.1832
+## Balanced Accuracy      0.9982   0.9897   0.9872   0.9869   0.9982</code></pre>
+<p>With this developed model, the accuracy with the test data will reach 0.9884. It means out of sample error is 0.0116.</p>
 </div>
 
 

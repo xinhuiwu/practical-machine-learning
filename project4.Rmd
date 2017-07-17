@@ -11,13 +11,13 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Background
 
-Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement – a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, we will use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to predict the manner in which they did the exercise.
+Using devices such as Jawbone Up, Nike FuelBand, and Fitbit it is now possible to collect a large amount of data about personal activity relatively inexpensively. These type of devices are part of the quantified self movement - a group of enthusiasts who take measurements about themselves regularly to improve their health, to find patterns in their behavior, or because they are tech geeks. One thing that people regularly do is quantify how much of a particular activity they do, but they rarely quantify how well they do it. In this project, we will use data from accelerometers on the belt, forearm, arm, and dumbell of 6 participants to predict the manner in which they did the exercise.
 
 ## Build Model
 
 The "classe" variable in the training set is the outcome. We are trying to use any of the other variables to predict the "classe".
 
-First, we will clean up to remove some variables with no variables and with no value. so we use the functions ""nearZeroVar"" and ""is.na"" to get rid of those columns. Also we are removing all the user name and stamp time to further reduce the data size.
+First, we will clean up to remove some variables with no variables and with no value. so we use the functions **nearZeroVar** and **is.na** to get rid of those columns. Also we are removing all the user name and stamp time to further reduce the data size.
 
 ```{r}
 library(caret)
@@ -28,9 +28,10 @@ trainingcl <- trainingcl[,colSums(is.na(trainingcl)) == 0]
 trainingclfinal<-trainingcl[,7:59]
 ```
 
-Then we creates data partitions with the function ""createDataPartition"". We will get a matrix of indices corresponding to 70% of the data as the training set and get a matrix of indices corresponding to 30% of the data as the testing set. And we set ""x"" and ""y"" as predictors and outcome to improve the traning model process later on.
+Then we creates data partitions with the function **createDataPartition**. We will get a matrix of indices corresponding to 70% of the data as the training set and get a matrix of indices corresponding to 30% of the data as the testing set. And we set **x** and **y** as predictors and outcome to improve the traning model process later on.
 
 ```{r}
+set.seed(12345)
 inTraining <- createDataPartition(y=trainingclfinal$classe, p = .70, list=FALSE)
 trainingdata <- trainingclfinal[inTraining,] 
 testingdata <- trainingclfinal[-inTraining,]
@@ -38,7 +39,7 @@ y<-trainingdata[,53]
 x<-trainingdata[,-53]
 ```
 
-We use ""randomn forest"" method to training the model. This is one of the most used/accurate algorithms along with boosting. It is a extension of bagging on classification/regression trees. The command ""trainControl"" are used to define how the model will be applied to the training data. We set the method as ""cross validation"" and the number of subsamples as ""3"".
+We use **randomn forest** method to training the model. This is one of the most used/accurate algorithms along with boosting. It is a extension of bagging on classification/regression trees. The command **trainControl** are used to define how the model will be applied to the training data. We set the method as **cross validation** and the number of subsamples as **3**.
 
 ```{r}
 modelrf<-train(x,y,data=trainingdata,method="rf",trControl = trainControl(method="cv",number=3))
@@ -52,4 +53,4 @@ Once the model is built, we use the testing data to get the predicted results. T
 predictions=predict(modelrf, newdata=testingdata)
 confusionMatrix(predictions, testingdata$classe)
 ```
-With this developed model, the accuracy with the test data will reach 0.9935.
+With this developed model, the accuracy with the test data will reach 0.9884. It means out of sample error is 0.0116.
